@@ -12,13 +12,17 @@ from sklearn.preprocessing import StandardScaler
 
 device = torch.device("cpu")
 
-columns = [
+inputs = [
     'Avg. Area Income',
     'Avg. Area House Age',
     'Avg. Area Number of Rooms',
     'Avg. Area Number of Bedrooms',
     'Area Population',
-] 
+]
+
+outputs = [
+    'Price',
+]
 
 class Dataset(torch.utils.data.Dataset):
 
@@ -27,8 +31,8 @@ class Dataset(torch.utils.data.Dataset):
         dataset = pd.read_csv(csv_file)
 
         # Pick featuers and labels
-        features = dataset[columns]
-        labels = dataset[['Price']]
+        features = dataset[inputs]
+        labels = dataset[outputs]
 
         # Scale values
         features = StandardScaler().fit_transform(features)
@@ -48,10 +52,8 @@ class Model(nn.Module):
     def __init__(self):
         super().__init__()
         self.layers = nn.Sequential(
-            nn.Linear(len(columns), 1),
+            nn.Linear(len(inputs), len(outputs)),
         )
-        # self.loss_func = nn.MSELoss()
-
         self.loss_func = nn.L1Loss()
 
     def forward(self, x):
